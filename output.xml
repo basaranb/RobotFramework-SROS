@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot rpa="false" generated="20190206 17:13:20.522" generator="Robot 3.1.1 (Python 2.7.5 on linux2)">
+<suite source="/opt/SROS_Automation/robot/03_LAG.robot" id="s1" name="03 LAG">
+<kw type="setup" name="Initialize Connection">
+<kw name="Login" library="sros">
+<arguments>
+<arg>sros_address=${HOST}</arg>
+<arg>username=${USERNAME}</arg>
+<arg>password=${PASSWORD}</arg>
+<arg>timeout=3000 seconds</arg>
+</arguments>
+<kw name="Open Connection" library="SSHLibrary">
+<doc>Opens a new SSH connection to the given ``host`` and ``port``.</doc>
+<arguments>
+<arg>${sros_address}</arg>
+<arg>prompt=${prompt}</arg>
+<arg>timeout=${timeout}</arg>
+<arg>port=${port}</arg>
+</arguments>
+<assign>
+<var>${conn_id}</var>
+</assign>
+<msg timestamp="20190206 17:13:23.562" level="INFO">${conn_id} = 1</msg>
+<status status="PASS" endtime="20190206 17:13:23.562" starttime="20190206 17:13:23.560"></status>
+</kw>
+<kw name="Login" library="SSHLibrary">
+<doc>Logs into the SSH server with the given ``username`` and ``password``.</doc>
+<arguments>
+<arg>${username}</arg>
+<arg>${password}</arg>
+</arguments>
+<msg timestamp="20190206 17:13:23.563" level="INFO">Logging into '172.29.7.116:22' as 'admin'.</msg>
+<msg timestamp="20190206 17:13:23.906" level="INFO">Read output: 
+*A:FFMPOS1#</msg>
+<status status="PASS" endtime="20190206 17:13:23.906" starttime="20190206 17:13:23.563"></status>
+</kw>
+<kw name="Write" library="SSHLibrary">
+<doc>Writes the given ``text`` on the remote machine and appends a newline.</doc>
+<arguments>
+<arg>environment no more</arg>
+</arguments>
+<msg timestamp="20190206 17:13:23.916" level="INFO">environment no more</msg>
+<status status="PASS" endtime="20190206 17:13:23.916" starttime="20190206 17:13:23.906"></status>
+</kw>
+<kw name="Read Until Regexp" library="SSHLibrary">
+<doc>Consumes and returns the server output until a match to ``regexp`` is found.</doc>
+<arguments>
+<arg>[A|B]:.*?[#|$]</arg>
+</arguments>
+<msg timestamp="20190206 17:13:23.919" level="INFO">*A:FFMPOS1#</msg>
+<status status="PASS" endtime="20190206 17:13:23.919" starttime="20190206 17:13:23.917"></status>
+</kw>
+<status status="PASS" endtime="20190206 17:13:23.919" starttime="20190206 17:13:23.558"></status>
+</kw>
+<status status="PASS" endtime="20190206 17:13:23.919" starttime="20190206 17:13:23.556"></status>
+</kw>
+<test id="s1-t1" name="LAG Must Be UP">
+<kw name="Execute SROS Command" library="sros">
+<arguments>
+<arg>show lag ${LAGID}</arg>
+</arguments>
+<assign>
+<var>${output}</var>
+</assign>
+<kw name="Read" library="SSHLibrary">
+<doc>Consumes and returns everything available on the server output.</doc>
+<assign>
+<var>${unused}</var>
+</assign>
+<msg timestamp="20190206 17:13:23.923" level="INFO">${unused} =  </msg>
+<status status="PASS" endtime="20190206 17:13:23.923" starttime="20190206 17:13:23.922"></status>
+</kw>
+<kw name="Write" library="SSHLibrary">
+<doc>Writes the given ``text`` on the remote machine and appends a newline.</doc>
+<arguments>
+<arg>${command}</arg>
+</arguments>
+<msg timestamp="20190206 17:13:23.931" level="INFO">show lag 99</msg>
+<status status="PASS" endtime="20190206 17:13:23.931" starttime="20190206 17:13:23.923"></status>
+</kw>
+<kw name="Read Until Regexp" library="SSHLibrary">
+<doc>Consumes and returns the server output until a match to ``regexp`` is found.</doc>
+<arguments>
+<arg>[A|B]:.*?[#|$|&gt;]</arg>
+</arguments>
+<assign>
+<var>${output}</var>
+</assign>
+<msg timestamp="20190206 17:13:23.947" level="INFO">===============================================================================
+Lag Data
+===============================================================================
+Lag-id         Adm     Opr     Weighted Threshold Up-Count MC Act/Stdby
+-------------------------------------------------------------------------------
+99             up      up      No       0         2        N/A
+===============================================================================
+*A:FFMPOS1#</msg>
+<msg timestamp="20190206 17:13:23.947" level="INFO">${output} = 
+===============================================================================
+Lag Data
+===============================================================================
+Lag-id         Adm     Opr...</msg>
+<status status="PASS" endtime="20190206 17:13:23.947" starttime="20190206 17:13:23.932"></status>
+</kw>
+<kw name="Run Keyword If" library="BuiltIn">
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<arguments>
+<arg>${verbose} is True</arg>
+<arg>Log</arg>
+<arg>${output}</arg>
+</arguments>
+<status status="PASS" endtime="20190206 17:13:23.949" starttime="20190206 17:13:23.948"></status>
+</kw>
+<msg timestamp="20190206 17:13:23.949" level="INFO">${output} = 
+===============================================================================
+Lag Data
+===============================================================================
+Lag-id         Adm     Opr...</msg>
+<status status="PASS" endtime="20190206 17:13:23.949" starttime="20190206 17:13:23.921"></status>
+</kw>
+<kw name="Check LAG Up" library="SROSLAG">
+<arguments>
+<arg>${output}</arg>
+</arguments>
+<assign>
+<var>${status}</var>
+</assign>
+<msg timestamp="20190206 17:13:23.951" level="INFO">${status} = UP</msg>
+<status status="PASS" endtime="20190206 17:13:23.951" starttime="20190206 17:13:23.950"></status>
+</kw>
+<kw name="Should Be Equal" library="BuiltIn">
+<doc>Fails if the given objects are unequal.</doc>
+<arguments>
+<arg>${status}</arg>
+<arg>UP</arg>
+</arguments>
+<msg timestamp="20190206 17:13:23.952" level="INFO">Argument types are:
+&lt;type 'str'&gt;
+&lt;type 'unicode'&gt;</msg>
+<status status="PASS" endtime="20190206 17:13:23.953" starttime="20190206 17:13:23.952"></status>
+</kw>
+<doc>LAG Must be up for this test to run</doc>
+<status status="PASS" endtime="20190206 17:13:23.953" critical="yes" starttime="20190206 17:13:23.920"></status>
+</test>
+<test id="s1-t2" name="Discover Ports">
+<kw name="Execute SROS Command" library="sros">
+<arguments>
+<arg>show lag ${LAGID} port</arg>
+</arguments>
+<assign>
+<var>${output}</var>
+</assign>
+<kw name="Read" library="SSHLibrary">
+<doc>Consumes and returns everything available on the server output.</doc>
+<assign>
+<var>${unused}</var>
+</assign>
+<msg timestamp="20190206 17:13:23.956" level="INFO">${unused} =  </msg>
+<status status="PASS" endtime="20190206 17:13:23.956" starttime="20190206 17:13:23.955"></status>
+</kw>
+<kw name="Write" library="SSHLibrary">
+<doc>Writes the given ``text`` on the remote machine and appends a newline.</doc>
+<arguments>
+<arg>${command}</arg>
+</arguments>
+<msg timestamp="20190206 17:13:23.969" level="INFO">show lag 99 port</msg>
+<status status="PASS" endtime="20190206 17:13:23.969" starttime="20190206 17:13:23.956"></status>
+</kw>
+<kw name="Read Until Regexp" library="SSHLibrary">
+<doc>Consumes and returns the server output until a match to ``regexp`` is found.</doc>
+<arguments>
+<arg>[A|B]:.*?[#|$|&gt;]</arg>
+</arguments>
+<assign>
+<var>${output}</var>
+</assign>
+<msg timestamp="20190206 17:13:23.991" level="INFO">===============================================================================
+Lag Port States
+LACP Status: e - Enabled, d - Disabled
+===============================================================================
+Lag-id Port-id        Adm   Act/     Opr   Primary Sub-group      Forced Prio
+                            Stdby                                        
+-------------------------------------------------------------------------------
+99(e)  1/1/1          up    active   up    yes     1              -      32768
+       1/2/1          up    active   up            1              -      32768
+===============================================================================
+*A:FFMPOS1#</msg>
+<msg timestamp="20190206 17:13:23.991" level="INFO">${output} = 
+===============================================================================
+Lag Port States
+LACP Status: e - Enabled, d - Disabled
+============================================================...</msg>
+<status status="PASS" endtime="20190206 17:13:23.991" starttime="20190206 17:13:23.970"></status>
+</kw>
+<kw name="Run Keyword If" library="BuiltIn">
+<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
+<arguments>
+<arg>${verbose} is True</arg>
+<arg>Log</arg>
+<arg>${output}</arg>
+</arguments>
+<status status="PASS" endtime="20190206 17:13:23.993" starttime="20190206 17:13:23.992"></status>
+</kw>
+<msg timestamp="20190206 17:13:23.993" level="INFO">${output} = 
+===============================================================================
+Lag Port States
+LACP Status: e - Enabled, d - Disabled
+============================================================...</msg>
+<status status="PASS" endtime="20190206 17:13:23.993" starttime="20190206 17:13:23.954"></status>
+</kw>
+<kw name="Discover LAG Ports" library="SROSLAG">
+<arguments>
+<arg>${LAGID}</arg>
+<arg>${output}</arg>
+</arguments>
+<assign>
+<var>${portlist}</var>
+</assign>
+<msg timestamp="20190206 17:13:23.995" level="INFO">Found port: 1/1/1
+Found port: 1/2/1</msg>
+<msg timestamp="20190206 17:13:23.995" level="INFO">${portlist} = ['1/1/1', '1/2/1']</msg>
+<status status="PASS" endtime="20190206 17:13:23.995" starttime="20190206 17:13:23.994"></status>
+</kw>
+<kw name="Set Global Variable" library="BuiltIn">
+<doc>Makes a variable available globally in all tests and suites.</doc>
+<arguments>
+<arg>${portlist}</arg>
+</arguments>
+<msg timestamp="20190206 17:13:23.997" level="INFO">${portlist} = ['1/1/1', '1/2/1']</msg>
+<status status="PASS" endtime="20190206 17:13:23.997" starttime="20190206 17:13:23.996"></status>
+</kw>
+<kw type="for" name="${port} IN [ @{portlist} ]">
+<kw type="foritem" name="${port} = 1/1/1">
+<kw name="Log" library="BuiltIn">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>Found Port: ${port}</arg>
+</arguments>
+<msg timestamp="20190206 17:13:23.998" level="INFO">Found Port: 1/1/1</msg>
+<status status="PASS" endtime="20190206 17:13:23.999" starttime="20190206 17:13:23.998"></status>
+</kw>
+<status status="PASS" endtime="20190206 17:13:23.999" starttime="20190206 17:13:23.997"></status>
+</kw>
+<kw type="foritem" name="${port} = 1/2/1">
+<kw name="Log" library="BuiltIn">
+<doc>Logs the given message with the given level.</doc>
+<arguments>
+<arg>Found Port: ${port}</arg>
+</arguments>
+<msg timestamp="20190206 17:13:24.000" level="INFO">Found Port: 1/2/1</msg>
+<status status="PASS" endtime="20190206 17:13:24.000" starttime="20190206 17:13:23.999"></status>
+</kw>
+<status status="PASS" endtime="20190206 17:13:24.000" starttime="20190206 17:13:23.999"></status>
+</kw>
+<status status="PASS" endtime="20190206 17:13:24.000" starttime="20190206 17:13:23.997"></status>
+</kw>
+<doc>Find port attached to LAG</doc>
+<status status="PASS" endtime="20190206 17:13:24.000" critical="yes" starttime="20190206 17:13:23.953"></status>
+</test>
+<test id="s1-t3" name="View Traffic Before Fail">
+<kw name="Log Traffic">
+<kw name="Execute SROS Command" library="sros">
+<arguments>
+<arg>monitor lag 99 interval ${INTERVAL} repeat ${REPEAT} rate</arg>
+</arguments>
+<kw name="Read" library="SSHLibrary">
+<doc>Consumes and returns everything available on the server output.</doc>
+<assign>
+<var>${unused}</var>
+</assign>
+<msg timestamp="20190206 17:13:24.004" level="INFO">${unused} =  </msg>
+<status status="PASS" endtime="20190206 17:13:24.004" starttime="20190206 17:13:24.003"></status>
+</kw>
+<kw name="Write" library="SSHLibrary">
+<doc>Writes the given ``text`` on the remote machine and appends a newline.</doc>
+<arguments>
+<arg>${command}</arg>
+</arguments>
+<msg timestamp="20190206 17:13:24.022" level="INFO">monitor lag 99 interval 3 repeat 5 rate</msg>
+<status status="PASS" endtime="20190206 17:13:24.023" starttime="20190206 17:13:24.004"></status>
+</kw>
+<kw name="Read Until Regexp" library="SSHLibrary">
+<doc>Consumes and returns the server output until a match to ``regexp`` is found.</doc>
+<arguments>
+<arg>[A|B]:.*?[#|$|&gt;]</arg>
+</arguments>
+<assign>
+<var>${output}</var>
+</assign>
+<status status="FAIL" endtime="20190206 17:13:24.352" starttime="20190206 17:13:24.023"></status>
+</kw>
+<status status="FAIL" endtime="20190206 17:13:24.353" starttime="20190206 17:13:24.002"></status>
+</kw>
+<status status="FAIL" endtime="20190206 17:13:24.353" starttime="20190206 17:13:24.001"></status>
+</kw>
+<doc>Log traffic distribution on ports before port fail</doc>
+<status status="FAIL" endtime="20190206 17:13:24.353" critical="yes" starttime="20190206 17:13:24.001">Execution terminated by signal</status>
+</test>
+<test id="s1-t4" name="Wait For Port Fail">
+<doc>Wait for a port status to become DOWN</doc>
+<tags>
+<tag>robot:exit</tag>
+</tags>
+<status status="FAIL" endtime="20190206 17:13:24.355" critical="yes" starttime="20190206 17:13:24.354">Test execution stopped due to a fatal error.</status>
+</test>
+<test id="s1-t5" name="View Traffic After Fail">
+<doc>Log traffic distribution on ports after port fail</doc>
+<tags>
+<tag>robot:exit</tag>
+</tags>
+<status status="FAIL" endtime="20190206 17:13:24.356" critical="yes" starttime="20190206 17:13:24.355">Test execution stopped due to a fatal error.</status>
+</test>
+<test id="s1-t6" name="Wait For Port Recover">
+<doc>Wait for all ports to recover</doc>
+<tags>
+<tag>robot:exit</tag>
+</tags>
+<status status="FAIL" endtime="20190206 17:13:24.357" critical="yes" starttime="20190206 17:13:24.356">Test execution stopped due to a fatal error.</status>
+</test>
+<test id="s1-t7" name="View Traffic After Recover">
+<doc>Log traffic distribution on ports after all ports recover</doc>
+<tags>
+<tag>robot:exit</tag>
+</tags>
+<status status="FAIL" endtime="20190206 17:13:24.358" critical="yes" starttime="20190206 17:13:24.357">Test execution stopped due to a fatal error.</status>
+</test>
+<kw type="teardown" name="Drop Connection">
+<kw name="Close All Connections" library="SSHLibrary">
+<doc>Closes all open connections.</doc>
+<status status="PASS" endtime="20190206 17:13:24.475" starttime="20190206 17:13:24.360"></status>
+</kw>
+<status status="PASS" endtime="20190206 17:13:24.475" starttime="20190206 17:13:24.359"></status>
+</kw>
+<doc>LAG Port Failure and Recover Traffic Distribution</doc>
+<status status="FAIL" endtime="20190206 17:13:24.475" starttime="20190206 17:13:20.523"></status>
+</suite>
+<statistics>
+<total>
+<stat fail="5" pass="2">Critical Tests</stat>
+<stat fail="5" pass="2">All Tests</stat>
+</total>
+<tag>
+<stat info="combined" fail="1" combined="NOT robot:exit" pass="2">NOT robot:exit</stat>
+<stat fail="4" pass="0">robot:exit</stat>
+</tag>
+<suite>
+<stat fail="5" id="s1" name="03 LAG" pass="2">03 LAG</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
